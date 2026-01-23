@@ -32,16 +32,31 @@ void lcd_initialize(){
 
 void setup() {
   // 16*2 LCD is use 
-  // For Circuit Diagram : See the 03_LCD_Config.png
+  // For Circuit Diagram : See the 04_Input.png
+ 
 
   DDRD = 0xFF; // All the pis of pord D to o/p
   DDRB |= (1<<PB0) | (1<<PB1) | (1<<PB2); // Pin 0 to 2 of port B as o/p , RS = 0, RW = 1 , E = 2
   lcd_initialize();
+
+  //For Input 
+    // Read PD2
+
+  DDRB &= (~(1<<PB3)); // PB3 set as input
+  DDRC |= (1<<PC0); // Led response to input
 }
 
 void loop() {
-  lcd_cmd(0x80); //Command code to set the cursor at first row
-  lcd_string("AVR BARE METAL",14); 
-  lcd_cmd(0xC0); //Set the cursor to second line
-  lcd_string("PROGRAMMING",11);
+  if(PINB &(1<<PB3)) //Check if the input is high
+  { 
+    PORTC |= (1<<PC0); //Turn on the led
+    lcd_cmd(0x80); //Command code to set the cursor at first row
+    lcd_string("On Mode..!",10); 
+  }
+  else
+  {
+    PORTC &= (~(1<<PC0)); //Turn off the led
+    lcd_cmd(0x80); //Command code to set the cursor at first row
+    lcd_string("Off Mode.!",10); 
+  }
 }
